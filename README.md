@@ -1,4 +1,4 @@
-# Provisioning AWS Resources with Terraform: EC2, S3, DynamoDB & State Management
+ Provisioning AWS Resources with Terraform: EC2, S3, DynamoDB & State Management
 
 Hello everyone In this Terraform project, our objective is to provision an AWS EC2 instance, an S3 bucket, and an AWS DynamoDB table in the AWS cloud infrastructure using Terraform. As part of our best practices, we will be storing our Terraform state file in the S3 bucket, which will serve as our backend for managing state information.
 
@@ -46,9 +46,9 @@ mkdir -p Terraform_Project/S3_Bucket
 ```
 Create 3 files under this directory
 
-1. provider.tf
+#### provider.tf
 
-In Terraform, a provider.tf file is typically used to configure and define the provider you're using to manage your infrastructure. Providers are plugins that Terraform uses to interact with various cloud platforms, services, or systems
+* In Terraform, a provider.tf file is typically used to configure and define the provider you're using to manage your infrastructure. Providers are plugins that Terraform uses to interact with various cloud platforms, services, or systems
 ``` hcl 
 terraform {
   required_providers {
@@ -65,9 +65,9 @@ provider "aws" {
 }
 ```
 
-2. variables.tf
+#### variables.tf
 
-variables.tf file contain all the required variables to create the S3-Bucket. By using input variables, your Terraform configurations become more dynamic and reusable, allowing you to easily adjust settings and values without modifying the actual resource definitions. 
+* variables.tf file contain all the required variables to create the S3-Bucket. By using input variables, your Terraform configurations become more dynamic and reusable, allowing you to easily adjust settings and values without modifying the actual resource definitions. 
 ```hcl
 # Region in which the bucket should get created
 variable "region" {
@@ -92,8 +92,9 @@ variable "s3_file" {
 
 ```
 
-3. bucket.tf
-The bucket.tf is the file which create the S3-Bucket. The bucket name must be globally unique; otherwise, the S3 bucket creation will not be allowed
+#### bucket.tf
+* The bucket.tf is the file which create the S3-Bucket. The bucket name must be globally unique; otherwise, the S3 bucket creation will not be allowed
+
 ```hcl
 resource "aws_s3_bucket" "my_bucket1" {
     bucket = var.bucket-Name
@@ -101,12 +102,11 @@ resource "aws_s3_bucket" "my_bucket1" {
         Name = var.bucket-Name
     }
 }
-```
 resource "aws_s3_object" "Bucket_directory1" {
   bucket = aws_s3_bucket.my_bucket1.bucket
   key    = "${var.s3_folder}/${var.s3_file}"
 }
-
+```
 Now let's create S3 bucket and add .tfstate file to it
 
 Run below command one by one:
@@ -141,7 +141,7 @@ mkdir -p Terraform_Project/Remote_Resource
 ```
 Create 3 files under this directory
 
-1. provider.tf
+#### provider.tf
 
 ```hcl 
 terraform {
@@ -159,7 +159,7 @@ provider "aws" {
 }
 ```
 
-2. Variables.tf
+#### Variables.tf
 ```hcl
 variable "region" {
   default = "ap-south-1"
@@ -186,9 +186,9 @@ variable "state_table_name" {
 }
 ```
 
-3. ec2.tf
+#### ec2.tf
 
-ec2.tf file contains all the keys and values required to create an ec2 instance.
+- ec2.tf file contains all the keys and values required to create an ec2 instance.
 ```hcl
 resource "aws_instance" "EC2" {
     ami = var.ami_id
@@ -199,9 +199,9 @@ resource "aws_instance" "EC2" {
 }
 ```
 
-4. security_group.tf
+#### security_group.tf
 
-security_group.tf file contains port number, protocol, ingress(Inbond) and egress(Outbond) details required to create an ec2 instance.
+- security_group.tf file contains port number, protocol, ingress(Inbond) and egress(Outbond) details required to create an ec2 instance.
 ```hcl
 resource "aws_security_group" "terfm_project" {
     name        = "ALLOW_SSH"
@@ -231,9 +231,9 @@ resource "aws_security_group" "terfm_project" {
 
 ```
 
-5. dynamodb.tf
+#### dynamodb.tf
 
-dynamodb.tf file contains all the details required to create dynamodb table
+* dynamodb.tf file contains all the details required to create dynamodb table
 ```hcl
 resource "aws_dynamodb_table" "my_state_table" {
     name = var.state_table_name
@@ -252,9 +252,9 @@ resource "aws_dynamodb_table" "my_state_table" {
 }
 ```
 
-4. backend.tf
+#### backend.tf
 
-This backend.tf file will move .tfstate files to the S3-Bucket. Terraform will not allow user to use the variables inside the backend so we have to hardcode the all the values.
+- This backend.tf file will move .tfstate files to the S3-Bucket. Terraform will not allow user to use the variables inside the backend so we have to hardcode the all the values.
 ```hcl
 terraform {
     backend "s3" {
@@ -278,9 +278,9 @@ terraform apply
 
 After the resource is sucessfully created open S3 bucket and confirm .tfstate file is stored or not. 
 
-Once apply is completed, resources are immediately available.
-```bash
-terraform apply
-```
+From the image i can confirm that the S3 bucket is created sucessfully 
 
+If you want to inspect the .tfstate slect the file and click on Open.
+
+ ![Alt text](image.png)
 
