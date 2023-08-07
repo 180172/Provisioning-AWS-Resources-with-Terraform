@@ -47,7 +47,6 @@ mkdir -p Terraform_Project/S3_Bucket
 Create 3 files under this directory
 
 1. provider.tf
-
 ``` hcl 
 terraform {
   required_providers {
@@ -63,7 +62,6 @@ provider "aws" {
     region = var.region
 }
 ```
-Save the file
 
 2. Variables.tf
 ```hcl
@@ -90,7 +88,6 @@ variable "s3_file" {
 
 ```
 
-Save the file
 3. Bucket.tf
 Bucket name should be globally unique other wise S3 bucket will not allow you to create the bucket.
 ```hcl
@@ -105,8 +102,6 @@ resource "aws_s3_object" "Bucket_directory1" {
   bucket = aws_s3_bucket.my_bucket1.bucket
   key    = "${var.s3_folder}/${var.s3_file}"
 }
-```
-Save the file
 
 Now let's create S3 bucket and add .tfstate file to it
 
@@ -158,7 +153,6 @@ provider "aws" {
     region = var.region
 }
 ```
-Save the file
 
 2. Variables.tf
 ```hcl
@@ -186,7 +180,6 @@ variable "state_table_name" {
   default = "State_Locker"
 }
 ```
-Save the file
 
 3. ec2.tf
 ```hcl
@@ -228,7 +221,7 @@ resource "aws_security_group" "terfm_project" {
 }
 
 ```
-Save the file
+
 5. dynamodb.tf
 ```hcl
 resource "aws_dynamodb_table" "my_state_table" {
@@ -247,7 +240,6 @@ resource "aws_dynamodb_table" "my_state_table" {
 
 }
 ```
-Save the file
 
 4. backend.tf
 Terraform will not allow user to use the variables inside the backend so we have to hardcode the all the values.
@@ -261,7 +253,6 @@ terraform {
     }   
 }
 ```
-Save the file
 
 Run below command one by one:
 ```bash
