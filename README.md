@@ -44,9 +44,9 @@ Create a directory and sub-directory
 ``` bash 
 mkdir -p Terraform_Project/S3_Bucket
 ```
-Create 4 files under this directory
+Create 3 files under this directory
 
-1. credentials.tf
+1. provider.tf
 
 ``` hcl 
 terraform {
@@ -67,17 +67,22 @@ Save the file
 
 2. Variables.tf
 ```hcl
+# Region in which the bucket should get created
 variable "region" {
   default = "ap-south-1"
 }
 
+# Name of the bucket
 variable "bucket-Name" {
   default = "Terraform-s3-project"
 }
 
+# Sub folder name in the bucket
 variable "s3_folder" {
   default = "State-files"
 }
+
+# tf.state file name
 
 variable "s3_file" {
   default = "ec2.tf"
@@ -102,20 +107,6 @@ resource "aws_s3_object" "Bucket_directory1" {
 ```
 Save the file
 
-4. Backend.tf
-Terraform will not allow user to use the variables inside the backend so we have to hardcode the all the values.
-```hcl
-terraform {
-    backend "s3" {
-        bucket = "Terraform-s3-project"
-        key    = "State-files/ec2.tf"
-        region = "ap-south-1"
-
-    }   
-}
-```
-Save the file
-
 Now let's create S3 bucket and add .tfstate file to it
 
 Run below command one by one:
@@ -133,6 +124,156 @@ The "terraform apply" command is used to apply the changes required to reach the
 the configuration.
 
 Terraform apply will also write data to the "terraform.tfstate file".
+
+Once apply is completed, resources are immediately available.
+```bash
+terraform apply
+```
+
+Now S3-Bucket is created. Now let's create EC2 instance with new security_group and a dynamodb table and store their .tfstate file in S3-Bucket
+
+## STEP 2:
+
+Create a directory and sub-directory
+``` bash 
+mkdir -p Terraform_Project/Remote_Resource
+```
+Create 3 files under this directory
+
+1. provider.tf
+
+```hcl 
+terraform {
+  required_providers {
+    aws ={
+        source  = "hashicorp/aws"
+        version = "~>5.0"
+    }
+
+  }
+}
+
+provider "aws" {
+    region = var.region
+}
+```
+Save the file
+
+2. Variables.tf
+```hcl
+variable "region" {
+  default = "ap-south-1"
+}
+
+# AMI ID
+variable "ami_id" {
+  default = "ami-0f99c1965355b1274"
+}
+
+# Instance type
+variable "instance_type" {
+  default = "t2.micro"
+}
+
+# TAG
+variable "instance_name" {
+  default = "EC2_INSTANCE_TERRAFORM"
+}
+
+# DynamoDB table name
+variable "state_table_name" {
+  default = "State_Locker"
+}
+```
+Save the file
+
+3. ec2.tf
+```hcl
+resource "aws_instance" "EC2" {
+    ami = var.ami_id
+    instance_type = var.instance_type
+    tags = {
+      name = var.instance_name
+    }
+}
+```
+
+4. security_group.tf
+```hcl
+resource "aws_security_group" "terfm_project" {
+    name        = "ALLOW_SSH"
+
+
+    ingress {
+        from_port   = 22
+        to_port     = 22
+        protocol    = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+
+    ingress {
+        from_port   = 80
+        to_port     = 80
+        protocol    = "tcp"
+        cidr_blocks = ["0.0.0.0/0"] 
+    }
+
+    egress {
+    from_port   = 0
+    to_port     = 65535
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]  
+  }
+}
+
+```
+Save the file
+5. dynamodb.tf
+```hcl
+resource "aws_dynamodb_table" "my_state_table" {
+    name = var.state_table_name
+    billing_mode = "PAY_PER_REQUEST"
+    hash_key = "LockID"
+    attribute {
+      name = "LockID"
+      type = "S"
+
+    }
+    tags = {
+       Name = var.state_table_name
+    
+  }
+
+}
+```
+Save the file
+
+4. backend.tf
+Terraform will not allow user to use the variables inside the backend so we have to hardcode the all the values.
+```hcl
+terraform {
+    backend "s3" {
+        bucket = "Terraform-s3-project"
+        key    = "State-files/ec2.tf"
+        region = "ap-south-1"
+
+    }   
+}
+```
+Save the file
+
+Run below command one by one:
+```bash
+terraform init
+```
+```bash
+terraform plan
+```
+```bash
+terraform apply
+```
+
+After the resource is sucessfully created open S3 bucket and confirm .tfstate file is stored or not. 
 
 Once apply is completed, resources are immediately available.
 ```bash
