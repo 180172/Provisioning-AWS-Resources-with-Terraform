@@ -282,5 +282,6 @@ From the image i can confirm that the S3 bucket is created sucessfully
 
 If you want to inspect the .tfstate slect the file and click on Open.
 
- ![Alt text](image.png)
+
+![SC](https://github.com/180172/Provisioning-AWS-Resources-with-Terraform-EC2-S3-DynamoDB-State-Management/assets/110009356/9e0cf5c5-052b-47e8-996b-dcd536d07a00)
 
