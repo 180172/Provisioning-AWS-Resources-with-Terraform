@@ -89,6 +89,7 @@ variable "s3_file" {
 }
 
 ```
+
 Save the file
 3. Bucket.tf
 Bucket name should be globally unique other wise S3 bucket will not allow you to create the bucket.
