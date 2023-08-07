@@ -1,6 +1,6 @@
 # Provisioning AWS Resources with Terraform: EC2, S3, DynamoDB & State Management
 
-Hello everyone In this Terraform project, our objective is to provision an AWS EC2 instance, an S3 bucket, and an AWS DynamoDB table in the AWS cloud infrastructure using Terraform. As part of our best practices, we will be storing our Terraform state file in the S3 bucket, which will serve as our backend for managing state information.
+Hello everyone In this Terraform project, our objective is to provision an AWS EC2 instance, an S3 bucket, and an AWS DynamoDB table in the AWS cloud infrastructure using Terraform. As part of our best practises,0 we will be storing our Terraform state file in the S3 bucket, which will serve as our backend for managing state information.
 
 
 ## Prerequsite 
@@ -11,7 +11,7 @@ Hello everyone In this Terraform project, our objective is to provision an AWS E
 
 ## Terraforn Installation
 
-Install my-project with npm
+Install my-project with rpm
 
 #### For Amazon Linux:
 
@@ -32,7 +32,7 @@ Verify that the terraform is insalled
 sudo terraform --version
 ```
 
-If you are using other than AmazonLinux you can refer the below link to refer Installation process
+If you are using something other than Amazon Linux, you can refer to the below link to refer to the Installation process.
 
 https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli
 
@@ -48,7 +48,7 @@ Create 3 files under this directory
 
 #### provider.tf
 
-* In Terraform, a provider.tf file is typically used to configure and define the provider you're using to manage your infrastructure. Providers are plugins that Terraform uses to interact with various cloud platforms, services, or systems
+* In Terraform, a provider.tf file is typically used to configure and define the provider you're using to manage your infrastructure. Providers are plugins that Terraform uses to interact with various cloud platforms, services, or systems.
 ``` hcl 
 terraform {
   required_providers {
@@ -67,7 +67,7 @@ provider "aws" {
 
 #### variables.tf
 
-* variables.tf file contain all the required variables to create the S3-Bucket. By using input variables, your Terraform configurations become more dynamic and reusable, allowing you to easily adjust settings and values without modifying the actual resource definitions. 
+* The variables.tf file contains all the required variables to create the S3-bucket. By using input variables, your Terraform configurations become more dynamic and reusable, allowing you to easily adjust settings and values without modifying the actual resource definitions. 
 ```hcl
 # Region in which the bucket should get created
 variable "region" {
@@ -93,7 +93,7 @@ variable "s3_file" {
 ```
 
 #### bucket.tf
-* The bucket.tf is the file which create the S3-Bucket. The bucket name must be globally unique; otherwise, the S3 bucket creation will not be allowed
+* The bucket.tf file is the file that creates the S3-Bucket. The bucket name must be globally unique; otherwise, the S3 bucket creation will not be allowed.
 
 ```hcl
 resource "aws_s3_bucket" "my_bucket1" {
@@ -107,12 +107,11 @@ resource "aws_s3_object" "Bucket_directory1" {
   key    = "${var.s3_folder}/${var.s3_file}"
 }
 ```
-Now let's create S3 bucket and add .tfstate file to it
+Now let's create an S3 bucket.
 
-Run below command one by one:
+Run the below commands one by one:
 
-When we run "terraform init", plugins required for the provider are automatically downloaded and saved locally to .terraform directory.
-
+When we run "terraform init", plugins required for the provider are automatically downloaded and saved locally to the .terraform directory.
 
 ```bash
 terraform init
@@ -131,7 +130,7 @@ Once apply is completed, resources are immediately available.
 terraform apply
 ```
 
-Now S3-Bucket is created. Now let's create EC2 instance with new security_group and a dynamodb table and store their .tfstate file in S3-Bucket
+Now S3-Bucket is created. Now let's create an EC2 instance with a new security_group and a dynamodb table and store their .tfstate file in an S3-Bucket.
 
 ## STEP 2:
 
@@ -188,7 +187,7 @@ variable "state_table_name" {
 
 #### ec2.tf
 
-- ec2.tf file contains all the keys and values required to create an ec2 instance.
+- The ec2.tf file contains all the keys and values required to create an EC2 instance.
 ```hcl
 resource "aws_instance" "EC2" {
     ami = var.ami_id
@@ -201,7 +200,7 @@ resource "aws_instance" "EC2" {
 
 #### security_group.tf
 
-- security_group.tf file contains port number, protocol, ingress(Inbond) and egress(Outbond) details required to create an ec2 instance.
+- The security_group.tf file contains the port number, protocol, ingress(Inbond) and egress(Outbond) details required to create an EC2 instance.
 ```hcl
 resource "aws_security_group" "terfm_project" {
     name        = "ALLOW_SSH"
@@ -233,7 +232,7 @@ resource "aws_security_group" "terfm_project" {
 
 #### dynamodb.tf
 
-* dynamodb.tf file contains all the details required to create dynamodb table
+* The dynamodb.tf file contains all the details required to create a dynamodb table..
 ```hcl
 resource "aws_dynamodb_table" "my_state_table" {
     name = var.state_table_name
@@ -254,7 +253,7 @@ resource "aws_dynamodb_table" "my_state_table" {
 
 #### backend.tf
 
-- This backend.tf file will move .tfstate files to the S3-Bucket. Terraform will not allow user to use the variables inside the backend so we have to hardcode the all the values.
+- This backend.tf file will move .tfstate files to the S3-Bucket. Terraform will not allow users to use the variables inside the backend, so we have to hardcode all the values.
 ```hcl
 terraform {
     backend "s3" {
@@ -276,11 +275,11 @@ terraform plan
 terraform apply
 ```
 
-After the resource is sucessfully created open S3 bucket and confirm .tfstate file is stored or not. 
+After the resource is successfully created, open the S3 bucket and confirm .tfstate file is stored or not.
 
-From the image i can confirm that the S3 bucket is created sucessfully 
+From the image, I can confirm that the S3 bucket was successfully created.
 
-If you want to inspect the .tfstate slect the file and click on Open.
+If you want to inspect the .tfstate select the file and click on Open.
 
 
 ![SC](https://github.com/180172/Provisioning-AWS-Resources-with-Terraform-EC2-S3-DynamoDB-State-Management/assets/110009356/9e0cf5c5-052b-47e8-996b-dcd536d07a00)
