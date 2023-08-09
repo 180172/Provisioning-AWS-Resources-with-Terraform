@@ -232,7 +232,7 @@ resource "aws_security_group" "terfm_project" {
 
 #### dynamodb.tf
 
-* The dynamodb.tf file contains all the details required to create a dynamodb table..
+* The dynamodb.tf file contains all the details required to create a dynamodb table....
 ```hcl
 resource "aws_dynamodb_table" "my_state_table" {
     name = var.state_table_name
